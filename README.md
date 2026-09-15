@@ -125,6 +125,8 @@ jupyter notebook notebooks/01_pubg_update_analysis.ipynb
 
 노트북은 저장소 기준 상대경로를 사용합니다. 저장소 루트에서 실행하거나, 해당 위치를 기준으로 Jupyter를 실행하세요. API 호출이나 신규 데이터 수집은 수행하지 않습니다.
 
+차트 한글 표시는 `Noto Sans KR`을 우선 사용하고, 없으면 `Malgun Gothic`을 사용합니다. 두 폰트가 모두 없어도 분석은 실행되지만 한글 글리프가 정상적으로 표시되지 않을 수 있습니다.
+
 ## 9. 사용 도구
 
 - Python

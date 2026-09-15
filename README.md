@@ -1,97 +1,99 @@
-# PUBG Update Review Analysis
+# PUBG Update 42.1 Steam 리뷰 분석
 
-Steam review analysis of PUBG Update 42.1 using Python, issue tagging, and pre/post comparison.
+Python을 활용해 PUBG Update 42.1 전후 Steam 리뷰의 사용자 반응과 주요 VOC 이슈를 비교한 분석 프로젝트입니다.
 
-## 1. Project overview
+## 1. 프로젝트 개요
 
-**Analysis question:** How did player reactions and major complaint topics change in Steam reviews before and after PUBG Update 42.1?
+**분석 질문:** PUBG Update 42.1 전후 Steam 리뷰에서 사용자 반응과 주요 불만 이슈는 어떻게 변화했는가?
 
-This project compares two 14-day Steam-review windows, then checks whether keyword-based changes hold up when the available review context is read. The objective is not to claim that a patch caused a change, but to show a reproducible workflow for validating user-feedback signals before interpreting them.
+UTC 기준 14일씩의 두 기간을 비교하고, 추천 비율·플레이시간·비추천 리뷰 이슈 비율을 확인했습니다. 이후 키워드 탐지 결과가 실제 리뷰 문맥에서도 타당한지 검증해, 단순 단어 빈도를 패치 효과로 과장하지 않도록 했습니다.
 
-## 2. Analysis window
+## 2. 분석 기간
 
-All timestamps are UTC. The update time is a `scheduled_maintenance_end_proxy`, not a confirmed deployment-completion time.
+모든 시간은 UTC입니다. 기준 시각은 확정된 배포 완료 시각이 아니라 `scheduled_maintenance_end_proxy`입니다.
 
-| Period | Window |
+| 구간 | 기간 |
 |---|---|
-| PRE | 2026-06-03 08:30 to 2026-06-17 08:30 |
-| Update 42.1 proxy | 2026-06-17 08:30 |
-| POST | 2026-06-17 08:30 to 2026-07-01 08:30 |
+| 업데이트 이전(PRE) | 2026-06-03 08:30 ~ 2026-06-17 08:30 |
+| Update 42.1 기준 시각 | 2026-06-17 08:30 |
+| 업데이트 이후(POST) | 2026-06-17 08:30 ~ 2026-07-01 08:30 |
 
-## 3. Analysis pipeline
+## 3. 분석 흐름
 
 ```text
-Steam Review Data
+Steam 리뷰 데이터
         ↓
-Data Validation
+데이터 검증
         ↓
-PRE / POST Split
+업데이트 이전(PRE) / 업데이트 이후(POST) 구분
         ↓
-Recommendation & Playtime Comparison
+추천 비율 및 플레이시간 비교
         ↓
-Issue Keyword Tagging (negative reviews)
+비추천 리뷰 이슈 키워드 태깅
         ↓
-Original Review Context Validation
+원문 문맥 검증
         ↓
-Interpretation
+해석
 ```
 
-The repository intentionally publishes aggregate tables, figures, and short anonymized excerpts only. The private review-level source dataset, Steam identifiers, raw API pages, and full review texts are not included.
+공개 저장소에는 집계표, 차트, 익명화된 짧은 발췌만 포함합니다. Steam 사용자 식별자, 원본 API 페이지, 원본 리뷰 전문, review-level CSV는 포함하지 않습니다.
 
-## 4. Key findings
+## 4. 주요 결과
 
-### Recommendation rate
+### 추천 비율
 
-| Period | Reviews | Recommended | Recommendation rate |
+| 구간 | 리뷰 수 | 추천 리뷰 수 | 추천 비율 |
 |---|---:|---:|---:|
 | PRE | 667 | 524 | 78.56% |
 | POST | 850 | 666 | 78.35% |
 
-**Change: -0.21pp.** Overall recommendation rate showed no material change across these windows.
+**변화: -0.21%p.** 전체 추천 비율에서 뚜렷한 변화는 관찰되지 않았습니다.
 
-### Median playtime at review
+### 리뷰 작성 시점 플레이시간 중앙값
 
-| Period | Median playtime |
+| 구간 | 플레이시간 중앙값 |
 |---|---:|
-| PRE | 50.37h |
-| POST | 89.23h |
+| PRE | 50.37시간 |
+| POST | 89.23시간 |
 
-**Change: +38.86h.** PRE and POST do not represent the same user cohort, so this must not be interpreted as the update increasing player playtime.
+**변화: +38.86시간.** PRE와 POST는 동일 사용자를 추적한 cohort가 아니므로, 이 차이를 업데이트가 플레이시간을 증가시킨 결과로 해석하지 않습니다.
 
-### Negative-review issue comparison
+리뷰 길이 중앙값은 PRE **19자**, POST **15자**였습니다. 이는 기간별 리뷰 작성 방식의 차이를 보여주는 보조 지표이며, 감정 변화의 직접적인 측정값은 아닙니다.
 
-Issue percentages use all negative reviews in each period as their denominator (PRE n=143; POST n=184). A review can receive more than one tag.
+### 비추천 리뷰 이슈 비교
 
-| Issue | PRE | POST | Change |
+이슈 비율의 분모는 각 기간 전체 비추천 리뷰입니다(PRE 143건, POST 184건). 하나의 리뷰에는 여러 태그가 붙을 수 있습니다.
+
+| 이슈 | PRE | POST | 변화 |
 |---|---:|---:|---:|
-| Ranked / RP | 6.29% | 3.80% | -2.49pp |
-| Matchmaking | 4.90% | 2.17% | -2.72pp |
-| Cheating / fairness | 20.98% | 17.93% | -3.04pp |
-| Performance / technical | 6.99% | 7.61% | +0.62pp |
+| Ranked / RP | 6.29% | 3.80% | -2.49%p |
+| 매치메이킹 | 4.90% | 2.17% | -2.72%p |
+| 치팅 / 공정성 | 20.98% | 17.93% | -3.04%p |
+| 성능 / 기술 | 6.99% | 7.61% | +0.62%p |
 
-Several negative-review issue shares declined in POST, while performance/technical mentions increased slightly. These are observed changes, not estimates of patch impact.
+일부 비추천 이슈 비율은 패치 이후 감소했고, 성능/기술 언급은 소폭 증가했습니다. 이는 Steam 리뷰 표본에서 관찰된 변화이지, 패치 영향의 추정치는 아닙니다.
 
-## 5. Context validation
+## 5. 원문 문맥 검증
 
-The central safeguard in this analysis is:
+분석의 핵심 검증 흐름은 다음과 같습니다.
 
 ```text
-Keyword Detection → Quantitative Comparison → Original Review Validation → Interpretation
+키워드 탐지 → 정량 비교 → 원문 문맥 검증 → 해석
 ```
 
-Ranked/RP keyword share declined after the update, but the available review context did not provide sufficient evidence connecting that change directly to Update 42.1's RP calculation modification. The semantic check found no validated direct RP-calculation feedback among the 16 keyword candidates. Therefore, this project does **not** conclude that the RP patch reduced Ranked complaints.
+Ranked/RP 키워드 비율은 패치 이후 감소했지만, 공개 전 원문 검증에서 Update 42.1의 RP 계산 변경을 직접 언급한 리뷰는 PRE와 POST 모두 0건이었습니다. 따라서 이 프로젝트는 "RP 패치 때문에 Ranked 불만이 감소했다"고 결론내리지 않습니다.
 
-See [the detailed findings](docs/findings.md) and the privacy-safe [context excerpts](outputs/representative_reviews_public.csv).
+상세 근거는 [분석 결과 문서](docs/findings.md), 공개용 문맥 표본은 [익명화된 발췌](outputs/representative_reviews_public.csv)에서 확인할 수 있습니다.
 
-## 6. Visualizations
+## 6. 시각화
 
-![Recommendation rate before and after](figures/recommendation_rate.png)
+![PUBG Update 42.1 전후 추천 비율](figures/recommendation_rate.png)
 
-![Playtime distribution before and after](figures/playtime_distribution.png)
+![PUBG Update 42.1 전후 플레이시간 중앙값](figures/median_playtime.png)
 
-![Negative-review issue mentions before and after](figures/negative_issue_change.png)
+![PUBG Update 42.1 전후 비추천 리뷰 이슈 언급 비율](figures/negative_issue_change.png)
 
-## 7. Project structure
+## 7. 저장소 구조
 
 ```text
 PUBG_Analysis/
@@ -106,6 +108,7 @@ PUBG_Analysis/
 │   ├── representative_reviews_public.csv
 │   └── summary_statistics.csv
 ├── figures/
+│   ├── median_playtime.png
 │   ├── negative_issue_change.png
 │   ├── playtime_distribution.png
 │   └── recommendation_rate.png
@@ -113,37 +116,37 @@ PUBG_Analysis/
     └── findings.md
 ```
 
-## 8. Run the notebook
+## 8. 실행 방법
 
 ```bash
 python -m pip install -r requirements.txt
 jupyter notebook notebooks/01_pubg_update_analysis.ipynb
 ```
 
-The notebook uses repository-relative paths. Run it from the repository root or open it through Jupyter from that location.
+노트북은 저장소 기준 상대경로를 사용합니다. 저장소 루트에서 실행하거나, 해당 위치를 기준으로 Jupyter를 실행하세요. API 호출이나 신규 데이터 수집은 수행하지 않습니다.
 
-## 9. Tools
+## 9. 사용 도구
 
 - Python
 - Pandas
 - Matplotlib
 - Jupyter Notebook
-- Steam Review API (used for the original local collection; no API requests are made by this repository)
+- Steam Review API (최초 로컬 수집에만 사용했으며, 이 저장소는 API를 호출하지 않음)
 
-## 10. Limitations
+## 10. 한계
 
-- Steam reviews do not represent the full player population.
-- PRE and POST are not the same-user cohort.
-- Keyword-based tagging cannot fully understand context and can create false positives or false negatives.
-- The analysis cannot directly prove a causal relationship between the patch and review changes.
-- The update timestamp is a maintenance-end proxy.
+- Steam 리뷰는 전체 플레이어 모집단을 대표하지 않습니다.
+- PRE와 POST는 동일 사용자 cohort가 아닙니다.
+- 키워드 기반 태깅은 문맥을 완전히 이해하지 못해 false positive 또는 false negative가 생길 수 있습니다.
+- 패치와 리뷰 변화의 인과관계를 직접 증명할 수 없습니다.
+- 업데이트 기준 시각은 maintenance 종료 대리 시각입니다.
 
-## 11. What I learned
+## 11. 학습 내용
 
-The key lesson from this pilot is that keyword frequency alone is not a player-opinion conclusion. A more defensible workflow is:
+이 Pilot의 핵심은 키워드 빈도를 곧바로 사용자 의견이나 패치 효과로 해석하지 않은 것입니다.
 
 ```text
-Keyword Detection → Quantitative Comparison → Original Review Validation
+키워드 탐지 → 정량 비교 → 원문 문맥 검증
 ```
 
-That final context check is what prevents an observed keyword movement from being overstated as a patch effect.
+이 마지막 문맥 검증이 관찰된 키워드 변화를 과도한 인과 해석으로 확장하지 않게 합니다.
